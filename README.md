@@ -19,7 +19,7 @@
 
 ## 🌐 Live Demo
 
-[🔗 View the project online](https://tupagina.vercel.app) 
+[🔗 View the project online]([https://tupagina.vercel.app](https://calebjt7.github.io/retro-dashboard/)) 
 
 ## 🔮 Coming Soon
 
