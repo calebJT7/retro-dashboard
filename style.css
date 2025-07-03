@@ -1,0 +1,939 @@
+/* ========== VARIABLES Y FUENTES ========== */
+:root {
+    --retro-primary: #ff6b6b;
+    --retro-secondary: #4ecdc4;
+    --retro-accent: #ffe66d;
+    --retro-dark: #1a1a2e;
+    --retro-darker: #16213e;
+    --retro-light: #f7fff7;
+    --retro-success: #51cf66;
+    --retro-warning: #ffd43b;
+    --retro-danger: #ff6b6b;
+    --retro-info: #74c0fc;
+    
+    --retro-pixel: 'Press Start 2P', cursive;
+    --retro-vcr: 'VT323', monospace;
+    
+    --shadow-glow: 0 0 20px rgba(255, 107, 107, 0.3);
+    --shadow-box: 0 8px 32px rgba(0, 0, 0, 0.3);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========== RESET Y BASE ========== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--retro-vcr);
+    background: var(--retro-dark);
+    color: var(--retro-light);
+    overflow-x: hidden;
+    min-height: 100vh;
+    background-image: 
+        radial-gradient(circle at 20% 80%, rgba(255, 107, 107, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(78, 205, 196, 0.1) 0%, transparent 50%);
+}
+
+body.light {
+    background: var(--retro-light);
+    color: var(--retro-dark);
+    background-image: 
+        radial-gradient(circle at 20% 80%, rgba(255, 107, 107, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(78, 205, 196, 0.05) 0%, transparent 50%);
+}
+
+/* ========== EFECTOS VISUALES ========== */
+.scanlines {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.05) 2px,
+        rgba(0, 0, 0, 0.05) 4px
+    );
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.6;
+}
+
+.crt-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        linear-gradient(90deg, 
+            rgba(255, 0, 0, 0.02) 0%, 
+            rgba(0, 255, 0, 0.01) 50%, 
+            rgba(0, 0, 255, 0.02) 100%);
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.3;
+}
+
+/* ========== HEADER ========== */
+.top-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    border-bottom: 2px solid var(--retro-primary);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--retro-pixel);
+    font-size: 1rem;
+    color: var(--retro-accent);
+    text-shadow: 2px 2px 0 var(--retro-primary);
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.control-btn {
+    background: var(--retro-secondary);
+    color: var(--retro-dark);
+    border: none;
+    padding: 0.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 1rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.control-btn:hover {
+    background: var(--retro-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.digital-clock {
+    font-family: var(--retro-pixel);
+    font-size: 1.2rem;
+    color: var(--retro-accent);
+    text-shadow: 0 0 10px var(--retro-accent);
+    padding: 0.5rem 1rem;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    border: 2px solid var(--retro-accent);
+}
+
+/* ========== DASHBOARD LAYOUT ========== */
+.dashboard {
+    display: grid;
+    grid-template-columns: 1.2fr 1.5fr 1fr;
+    gap: 2rem;
+    padding: 2rem;
+    min-height: calc(100vh - 200px);
+}
+
+/* ========== PANELES ========== */
+.retro-panel {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    border: 3px solid var(--retro-primary);
+    border-radius: 12px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-box);
+    transition: var(--transition);
+}
+
+.retro-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, 
+        var(--retro-primary), 
+        var(--retro-secondary), 
+        var(--retro-accent));
+}
+
+.retro-panel:hover {
+    border-color: var(--retro-accent);
+    box-shadow: var(--shadow-glow), var(--shadow-box);
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px dashed var(--retro-secondary);
+}
+
+.retro-title {
+    font-family: var(--retro-pixel);
+    color: var(--retro-accent);
+    text-shadow: 2px 2px 0 var(--retro-primary);
+    font-size: 1rem;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* ========== BOTONES ========== */
+.btn {
+    font-family: var(--retro-vcr);
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: left 0.3s;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+.btn-primary {
+    background: var(--retro-primary);
+    color: var(--retro-light);
+    box-shadow: 0 4px 0 #d63031;
+}
+
+.btn-primary:hover {
+    background: #ff5252;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #d63031;
+}
+
+.btn-secondary {
+    background: var(--retro-secondary);
+    color: var(--retro-dark);
+    box-shadow: 0 4px 0 #00b894;
+}
+
+.btn-secondary:hover {
+    background: #81ecec;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #00b894;
+}
+
+.btn-nav {
+    background: var(--retro-accent);
+    color: var(--retro-dark);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    padding: 0;
+}
+
+.btn-play {
+    background: var(--retro-success);
+    color: var(--retro-light);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+}
+
+.btn-pause {
+    background: var(--retro-warning);
+    color: var(--retro-dark);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+}
+
+.btn-reset {
+    background: var(--retro-danger);
+    color: var(--retro-light);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+}
+
+.btn-danger {
+    background: var(--retro-danger);
+    color: var(--retro-light);
+}
+
+/* ========== FORMULARIOS ========== */
+.retro-form {
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.retro-form input,
+.retro-form select,
+.retro-form textarea {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid var(--retro-secondary);
+    color: var(--retro-light);
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-family: var(--retro-vcr);
+    font-size: 1rem;
+    transition: var(--transition);
+    flex: 1;
+}
+
+.retro-form input:focus,
+.retro-form select:focus,
+.retro-form textarea:focus {
+    outline: none;
+    border-color: var(--retro-accent);
+    box-shadow: 0 0 0 3px rgba(255, 230, 109, 0.2);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.retro-form input::placeholder,
+.retro-form textarea::placeholder {
+    color: rgba(247, 255, 247, 0.6);
+}
+
+/* ========== TAREAS ========== */
+.task-stats {
+    font-family: var(--retro-pixel);
+    color: var(--retro-accent);
+    font-size: 0.9rem;
+}
+
+.task-filters {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid var(--retro-secondary);
+    color: var(--retro-light);
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.filter-btn.active,
+.filter-btn:hover {
+    background: var(--retro-secondary);
+    color: var(--retro-dark);
+}
+
+.tasks-container {
+    max-height: 400px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--retro-primary) rgba(255, 255, 255, 0.1);
+}
+
+.task-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-left: 4px solid var(--retro-primary);
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0 8px 8px 0;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.task-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px);
+}
+
+.task-item.completed {
+    opacity: 0.7;
+    border-left-color: var(--retro-success);
+}
+
+.task-item.completed .task-title {
+    text-decoration: line-through;
+}
+
+.task-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.task-checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--retro-primary);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.task-checkbox.checked {
+    background: var(--retro-success);
+    border-color: var(--retro-success);
+}
+
+.task-checkbox.checked::after {
+    content: '✓';
+    color: var(--retro-light);
+    font-weight: bold;
+}
+
+.task-title {
+    flex: 1;
+    font-size: 1.1rem;
+    color: var(--retro-light);
+}
+
+.task-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.9rem;
+    color: var(--retro-secondary);
+}
+
+.task-priority {
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.task-priority.alta {
+    background: rgba(255, 107, 107, 0.2);
+    color: var(--retro-danger);
+}
+
+.task-priority.media {
+    background: rgba(255, 230, 109, 0.2);
+    color: var(--retro-warning);
+}
+
+.task-priority.baja {
+    background: rgba(78, 205, 196, 0.2);
+    color: var(--retro-secondary);
+}
+
+.task-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.task-actions button {
+    background: none;
+    border: none;
+    color: var(--retro-light);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: var(--transition);
+}
+
+.task-actions button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--retro-accent);
+}
+
+/* ========== CALENDARIO ========== */
+.calendar-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.calendar-title {
+    font-family: var(--retro-pixel);
+    color: var(--retro-accent);
+    font-size: 1rem;
+    min-width: 200px;
+    text-align: center;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    margin-bottom: 1rem;
+}
+
+.calendar-day,
+.calendar-weekday {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    transition: var(--transition);
+    position: relative;
+    cursor: pointer;
+}
+
+.calendar-weekday {
+    background: var(--retro-secondary);
+    color: var(--retro-dark);
+    font-family: var(--retro-pixel);
+    font-size: 0.8rem;
+    cursor: default;
+}
+
+.calendar-day {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--retro-light);
+    border: 2px solid transparent;
+}
+
+.calendar-day:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: var(--retro-secondary);
+}
+
+.calendar-day.today {
+    background: var(--retro-primary);
+    color: var(--retro-light);
+    font-weight: bold;
+}
+
+.calendar-day.selected {
+    border-color: var(--retro-accent);
+    box-shadow: 0 0 0 2px var(--retro-accent);
+}
+
+.calendar-day.has-tasks::after {
+    content: '';
+    position: absolute;
+
+    bottom: 6px;
+    right: 8px;
+    width: 10px;
+    height: 10px;
+    background: var(--retro-accent);
+    border-radius: 50%;
+    border: 2px solid var(--retro-primary);
+    box-shadow: 0 0 6px 2px var(--retro-accent), 0 0 0 2px var(--retro-primary);
+    transition: box-shadow 0.2s;
+    z-index: 2;
+}
+
+.calendar-day.has-tasks:hover::after {
+    box-shadow: 0 0 12px 4px var(--retro-accent), 0 0 0 2px var(--retro-primary);
+    background: var(--retro-secondary);
+}
+
+/* ================== INDICADOR DE PRIORIDAD EN CALENDARIO ================== */
+.task-dot-alta,
+.calendar-day.has-tasks .task-dot-alta,
+.calendar-day.has-tasks::after.task-dot-alta {
+    background: var(--retro-danger) !important;
+    box-shadow: 0 0 8px 2px var(--retro-danger), 0 0 0 2px var(--retro-primary);
+}
+.task-dot-media,
+.calendar-day.has-tasks .task-dot-media,
+.calendar-day.has-tasks::after.task-dot-media {
+    background: var(--retro-warning) !important;
+    box-shadow: 0 0 8px 2px var(--retro-warning), 0 0 0 2px var(--retro-primary);
+}
+.task-dot-baja,
+.calendar-day.has-tasks .task-dot-baja,
+.calendar-day.has-tasks::after.task-dot-baja {
+    background: var(--retro-secondary) !important;
+    box-shadow: 0 0 8px 2px var(--retro-secondary), 0 0 0 2px var(--retro-primary);
+}
+
+/* ================== NOTAS ================== */
+#notes-list {
+    margin-top: 1rem;
+}
+.note {
+    background: var(--retro-accent);
+    color: var(--retro-dark);
+    border: 2px solid var(--retro-primary);
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    font-family: var(--retro-vcr);
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    transition: box-shadow 0.2s, border-color 0.2s;
+}
+.note:focus-within {
+    border-color: var(--retro-secondary);
+    box-shadow: 0 0 0 3px var(--retro-secondary);
+}
+.note-title {
+    font-family: var(--retro-pixel);
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    outline: none;
+}
+.note-content {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    outline: none;
+}
+.note-actions {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
+.note-actions button {
+    background: none;
+    border: none;
+    color: var(--retro-dark);
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin-left: 4px;
+    transition: color 0.2s;
+}
+.note-actions button:hover {
+    color: var(--retro-danger);
+}
+
+/* ===== POMODORO ESTÉTICA RETRO MEJORADA ===== */
+.pomodoro-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 2px dashed var(--retro-secondary);
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: inset 0 0 10px rgba(255,255,255,0.05);
+}
+
+#pomodoro-timer {
+    font-size: 3.5rem;
+    font-family: var(--retro-pixel);
+    color: var(--retro-accent);
+    text-shadow: 2px 2px 0 var(--retro-primary);
+    margin-bottom: 0.3rem;
+}
+
+#pomodoro-status {
+    font-size: 0.95rem;
+    font-style: italic;
+    color: var(--retro-light);
+    margin-bottom: 1rem;
+    text-shadow: 1px 1px 0 #000;
+}
+
+.progress-ring {
+    margin-bottom: 1rem;
+}
+.progress-ring-svg circle:first-child {
+    opacity: 0.2;
+}
+#progress-circle {
+    stroke: var(--retro-primary);
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.3s ease-in-out;
+}
+
+.pomodoro-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.pomodoro-settings {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    background: rgba(255,255,255,0.03);
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    border: 2px solid var(--retro-accent);
+    margin-bottom: 1rem;
+}
+
+.setting-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--retro-light);
+}
+.setting-group input {
+    width: 60px;
+    text-align: center;
+    font-size: 1.1rem;
+    margin-top: 0.3rem;
+    background: rgba(255,255,255,0.07);
+    border: 2px solid var(--retro-secondary);
+    color: var(--retro-light);
+    border-radius: 6px;
+    padding: 0.4rem;
+}
+
+/* ================== RESPONSIVE ================== */
+@media (max-width: 1100px) {
+    .dashboard { grid-template-columns: 1fr; gap: 1rem; padding: 1rem; }
+    .retro-panel { min-height: 220px; }
+}
+@media (max-width: 700px) {
+    .dashboard { padding: 6px; }
+    .retro-panel { padding: 8px; }
+    .top-controls { padding: 0.5rem 0.5rem; }
+    #notification { right: 8px; bottom: 8px; padding: 10px 14px; font-size: 0.95rem; }
+}
+
+/* ================== SCROLL RETRO ================== */
+::-webkit-scrollbar {
+    width: 8px;
+    background: var(--retro-dark);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--retro-primary);
+    border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--retro-accent);
+}
+/* Tabs */
+.tab-container {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+.retro-tab {
+    flex: 1;
+    font-family: var(--retro-vcr);
+    padding: 0.6rem;
+    border: 2px solid var(--retro-secondary);
+    background: rgba(255,255,255,0.05);
+    color: var(--retro-light);
+    cursor: pointer;
+    transition: var(--transition);
+}
+.retro-tab.active {
+    background: var(--retro-secondary);
+    color: var(--retro-dark);
+    font-weight: bold;
+}
+.tab-content {
+    display: none;
+}
+.tab-content.active {
+    display: block;
+}
+/* ========== MODAL DE CONFIRMACIÓN ========== */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 3000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: var(--retro-dark);
+    border: 3px solid var(--retro-accent);
+    border-radius: 12px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 0 20px var(--retro-primary);
+    font-family: var(--retro-vcr);
+    color: var(--retro-light);
+}
+
+.modal-content h3 {
+    font-family: var(--retro-pixel);
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: var(--retro-accent);
+}
+
+.modal-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: space-around;
+    gap: 1rem;
+}
+
+.modal .btn {
+    flex: 1;
+    font-size: 0.95rem;
+    padding: 0.75rem;
+}
+/* ========== FOOTER STATS ========== */
+.stats-panel {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: rgba(0,0,0,0.4);
+    border-top: 2px solid var(--retro-secondary);
+    padding: 1rem 2rem;
+    flex-wrap: wrap;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid var(--retro-primary);
+    border-radius: 10px;
+    padding: 1rem;
+    margin: 0.5rem;
+    min-width: 180px;
+    justify-content: flex-start;
+    box-shadow: var(--shadow-box);
+    transition: var(--transition);
+}
+
+.stat-card i {
+    font-size: 1.4rem;
+    color: var(--retro-accent);
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.stat-value {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--retro-light);
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: var(--retro-secondary);
+}
+/* ===== NOTAS MEJORADAS ESTILO RETRO POST-IT ===== */
+.note {
+    border: 2px dashed var(--retro-primary);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transform: rotate(-0.3deg);
+}
+.note:hover {
+    transform: scale(1.03) rotate(0.5deg);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+
+.note-title {
+    font-family: var(--retro-pixel);
+    color: var(--retro-dark);
+    font-size: 1.2rem;
+    margin-bottom: 0.4rem;
+    text-shadow: 1px 1px 0 var(--retro-light);
+}
+
+.note-content {
+    font-size: 1rem;
+    line-height: 1.4;
+    color: var(--retro-dark);
+}
+
+.note[data-color="yellow"] {
+    background: #fff68f;
+}
+.note[data-color="pink"] {
+    background: #ffc0cb;
+}
+.note[data-color="blue"] {
+    background: #add8e6;
+}
+.note[data-color="green"] {
+    background: #90ee90;
+}
+/* ==== SELECT DE COLOR PARA NOTAS ==== */
+#note-color {
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid var(--retro-secondary);
+    color: var(--retro-light);
+    padding: 0.5rem;
+    border-radius: 6px;
+    font-family: var(--retro-vcr);
+    font-size: 1rem;
+    appearance: none;
+    position: relative;
+}
+
+#note-color option {
+    font-family: var(--retro-vcr);
+    background: var(--retro-dark);
+    color: var(--retro-light);
+}
+
+/* Iconos visibles en la lista de opciones (solo en algunos navegadores) */
+#note-color option[value="yellow"] { color: #f9d923; }
+#note-color option[value="pink"]   { color: #ff69b4; }
+#note-color option[value="blue"]   { color: #74c0fc; }
+#note-color option[value="green"]  { color: #51cf66; }
+
+/* Estilo del dropdown en Chrome */
+select::-ms-expand { display: none; }

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Dashboard Pro - Tu Espacio de Productividad</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="retro">
+    <!-- Efectos visuales -->
+    <div class="scanlines"></div>
+    <div class="crt-overlay"></div>
+    
+    <!-- Controles superiores -->
+    <header class="top-controls">
+        <div class="logo">
+            <i class="fas fa-desktop"></i>
+            <span>RETRO DASH</span>
+        </div>
+        <div class="header-controls">
+            <button id="fullscreen-btn" class="control-btn" title="Pantalla completa">
+                <i class="fas fa-expand"></i>
+            </button>
+            <button id="theme-toggle" class="control-btn" title="Cambiar tema">
+                <i class="fas fa-moon"></i>
+            </button>
+            <div class="digital-clock" id="digital-clock">00:00:00</div>
+        </div>
+    </header>
+
+    <!-- Dashboard principal -->
+    <main class="dashboard">
+        <!-- Panel de tareas -->
+        <section class="retro-panel tasks-panel">
+            <div class="panel-header">
+                <h2 class="retro-title">
+                    <i class="fas fa-tasks"></i> TAREAS
+                </h2>
+                <div class="task-stats">
+                    <span id="tasks-completed">0</span>/<span id="tasks-total">0</span>
+                </div>
+            </div>
+            
+            <form id="task-form" class="retro-form">
+                <div class="form-group">
+                    <input type="text" id="task-title" placeholder="Nueva tarea..." maxlength="50" required>
+                    <input type="date" id="task-date" required>
+                </div>
+                <div class="form-group">
+                    <select id="task-priority" required>
+                        <option value="alta">🔴 Alta</option>
+                        <option value="media" selected>🟡 Media</option>
+                        <option value="baja">🟢 Baja</option>
+                    </select>
+                    <select id="task-category">
+                        <option value="trabajo">💼 Trabajo</option>
+                        <option value="personal">👤 Personal</option>
+                        <option value="estudio">📚 Estudio</option>
+                        <option value="hogar">🏠 Hogar</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Agregar
+                    </button>
+                </div>
+            </form>
+
+            <div class="task-filters">
+                <button class="filter-btn active" data-filter="all">Todas</button>
+                <button class="filter-btn" data-filter="pending">Pendientes</button>
+                <button class="filter-btn" data-filter="completed">Completadas</button>
+                <button class="filter-btn" data-filter="today">Hoy</button>
+            </div>
+
+            <div id="tasks-list" class="tasks-container"></div>
+        </section>
+
+        <!-- Panel central - Calendario -->
+        <section class="retro-panel calendar-panel">
+            <div class="panel-header">
+                <h2 class="retro-title">
+                    <i class="fas fa-calendar-alt"></i> CALENDARIO
+                </h2>
+                <button id="today-btn" class="btn btn-secondary">Hoy</button>
+            </div>
+
+            <div class="calendar-controls">
+                <button id="prev-month" class="btn btn-nav">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <h3 id="calendar-month" class="calendar-title"></h3>
+                <button id="next-month" class="btn btn-nav">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <div id="calendar" class="calendar-grid"></div>
+            
+            <div class="calendar-info">
+                <div id="selected-date-info"></div>
+                <div id="calendar-tasks" class="calendar-tasks"></div>
+            </div>
+        </section>
+
+        <!-- Panel derecho - Notas y Pomodoro -->
+        <section class="retro-panel right-panel">
+            <!-- Pestañas -->
+            <div class="tab-container">
+                <button class="retro-tab active" data-tab="pomodoro">
+                    <i class="fas fa-clock"></i> POMODORO
+                </button>
+                <button class="retro-tab" data-tab="notes">
+                    <i class="fas fa-sticky-note"></i> NOTAS
+                </button>
+                       </div>
+
+            <!-- Contenido Pomodoro -->
+            <div id="pomodoro-content" class="tab-content active">
+                <div class="pomodoro-display">
+                    <div id="pomodoro-timer" class="time-display">25:00</div>
+                    <div id="pomodoro-status" class="pomodoro-status">Listo para trabajar</div>
+                    <div class="progress-ring">
+                        <svg class="progress-ring-svg" width="120" height="120">
+                            <circle cx="60" cy="60" r="54" fill="transparent" stroke="#4ecdc4" stroke-width="4"/>
+                            <circle id="progress-circle" cx="60" cy="60" r="54" fill="transparent" stroke="#ff6b6b" stroke-width="4"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="pomodoro-controls">
+                    <button id="pomodoro-start" class="btn btn-play">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button id="pomodoro-pause" class="btn btn-pause">
+                        <i class="fas fa-pause"></i>
+                    </button>
+                    <button id="pomodoro-reset" class="btn btn-reset">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                </div>
+
+                <div class="pomodoro-settings">
+                    <div class="setting-group">
+                        <label>Trabajo:</label>
+                        <input type="number" id="pomodoro-work" value="25" min="1" max="60">
+                        <span>min</span>
+                    </div>
+                    <div class="setting-group">
+                        <label>Descanso:</label>
+                        <input type="number" id="pomodoro-break" value="5" min="1" max="30">
+                        <span>min</span>
+                    </div>
+                </div>
+
+                <div class="pomodoro-stats">
+                    <div class="stat">
+                        <i class="fas fa-fire"></i>
+                        <span>Sesiones hoy: <strong id="sessions-today">0</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenido Notas -->
+            <div id="notes-content" class="tab-content">
+                <form id="note-form" class="retro-form">
+                    <input type="text" id="note-title" placeholder="Título de la nota..." maxlength="30" required>
+                    <textarea id="note-content" placeholder="Escribe tu nota aquí..." rows="4" required></textarea>
+                    <div class="form-group">
+                        <select id="note-color">
+                            <option value="yellow">🟡 Amarillo</option>
+                            <option value="pink">🩷 Rosa</option>
+                            <option value="blue">🔵 Azul</option>
+                            <option value="green">🟢 Verde</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Crear
+                        </button>
+                    </div>
+                </form>
+
+                <div id="notes-list" class="notes-container"></div>
+            </div>
+
+            <!-- Contenido Tareas -->
+            <div id="tasks-content" class="tab-content">
+                <!-- Aquí se puede reutilizar el código del panel de tareas existente -->
+                <div class="panel-header">
+                    <h2 class="retro-title">
+                        <i class="fas fa-tasks"></i> TAREAS
+                    </h2>
+                    <div class="task-stats">
+                        <span id="tasks-completed">0</span>/<span id="tasks-total">0</span>
+                    </div>
+                </div>
+                
+                <form id="task-form" class="retro-form">
+                    <div class="form-group">
+                        <input type="text" id="task-title" placeholder="Nueva tarea..." maxlength="50" required>
+                        <input type="date" id="task-date" required>
+                    </div>
+                    <div class="form-group">
+                        <select id="task-priority" required>
+                            <option value="alta">🔴 Alta</option>
+                            <option value="media" selected>🟡 Media</option>
+                            <option value="baja">🟢 Baja</option>
+                        </select>
+                        <select id="task-category">
+                            <option value="trabajo">💼 Trabajo</option>
+                            <option value="personal">👤 Personal</option>
+                            <option value="estudio">📚 Estudio</option>
+                            <option value="hogar">🏠 Hogar</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Agregar
+                        </button>
+                    </div>
+                </form>
+
+                <div class="task-filters">
+                    <button class="filter-btn active" data-filter="all">Todas</button>
+                    <button class="filter-btn" data-filter="pending">Pendientes</button>
+                    <button class="filter-btn" data-filter="completed">Completadas</button>
+                    <button class="filter-btn" data-filter="today">Hoy</button>
+                </div>
+
+                <div id="tasks-list" class="tasks-container"></div>
+            </div>
+
+            <!-- Contenido Clima -->
+            <div id="weather-content" class="tab-content">
+                <div class="weather-widget">
+                    <div class="weather-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span id="weather-city">Córdoba, AR</span>
+                    </div>
+                    <div class="weather-main">
+                        <div class="weather-icon">
+                            <i id="weather-icon" class="fas fa-sun"></i>
+                        </div>
+                        <div class="weather-temp">
+                            <span id="weather-temperature">--°C</span>
+                        </div>
+                    </div>
+                    <div class="weather-details">
+                        <div class="weather-detail">
+                            <i class="fas fa-eye"></i>
+                            <span id="weather-description">Cargando...</span>
+                        </div>
+                        <div class="weather-detail">
+                            <i class="fas fa-tint"></i>
+                            <span id="weather-humidity">--%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Panel de estadísticas -->
+    <footer class="stats-panel">
+        <div class="stat-card">
+            <i class="fas fa-check-circle"></i>
+            <div class="stat-info">
+                <span class="stat-value" id="total-completed">0</span>
+                <span class="stat-label">Completadas</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-clock"></i>
+            <div class="stat-info">
+                <span class="stat-value" id="focus-time">0h</span>
+                <span class="stat-label">Tiempo Focus</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-fire"></i>
+            <div class="stat-info">
+                <span class="stat-value" id="streak-days">0</span>
+                <span class="stat-label">Días Racha</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-trophy"></i>
+            <div class="stat-info">
+                <span class="stat-value" id="productivity-score">0%</span>
+                <span class="stat-label">Productividad</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notificaciones -->
+    <div id="notifications-container"></div>
+
+    <!-- Modal de confirmación -->
+    <div id="confirm-modal" class="modal">
+        <div class="modal-content">
+            <h3>¿Estás seguro?</h3>
+            <p id="confirm-message"></p>
+            <div class="modal-actions">
+                <button id="confirm-yes" class="btn btn-danger">Sí, eliminar</button>
+                <button id="confirm-no" class="btn btn-secondary">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    
+<div id="notification"></div>
+<script src="script.js"></script>
+</body>
+</html>
+
+</body>
+</html>
